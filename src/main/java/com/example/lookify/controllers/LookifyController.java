@@ -7,10 +7,11 @@ import javax.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -41,7 +42,7 @@ public class LookifyController {
 	}
 	
 	// show form page to add a new song 
-	@RequestMapping(value="/songs/new", method=RequestMethod.GET)
+	@RequestMapping(value="/songs/new")
 	public String add(Model model) {
 		if (!model.containsAttribute("song")) {
 			model.addAttribute("song",new Song());
@@ -50,7 +51,7 @@ public class LookifyController {
 	}
 	
 	// add new song
-	@RequestMapping(value="/songs/new", method=RequestMethod.POST)
+	@PostMapping(value="/songs/new")
 	public String add(Model model, @Valid @ModelAttribute("song") Song song, BindingResult result, RedirectAttributes redirectAttributes ) {
 		if (result.hasErrors()) {
 			redirectAttributes.addFlashAttribute("song",song);
@@ -73,7 +74,7 @@ public class LookifyController {
 
 	
 	// search by artist name
-	@RequestMapping(value="/search", method=RequestMethod.POST)
+	@PostMapping(value="/search")
 	public String search(@RequestParam(value = "search") String search , Model model ) {
 		List<Song> songs = lookifyServices.allSongsByArList(search);
 		model.addAttribute(songs);
@@ -82,7 +83,7 @@ public class LookifyController {
 	}
 	
 	// show the results of the search 
-	@RequestMapping(value="/search/{search}", method=RequestMethod.GET)
+	@RequestMapping(value="/search/{search}")
 	public String dsplaySearch(@PathVariable(value = "search") String search , Model model ) {
 		List<Song> songs = lookifyServices.allSongsByArList(search);
 		model.addAttribute("songs",songs);
@@ -91,7 +92,7 @@ public class LookifyController {
 	}
 	
 	// bonus: top ten songs in database
-	@RequestMapping(value="/search/topten", method=RequestMethod.GET)
+	@RequestMapping(value="/search/topten")
 	public String dsplaytop(Model model ) {
 		List<Song> songs = lookifyServices.topSongs();
 		model.addAttribute("songs",songs);
@@ -99,7 +100,7 @@ public class LookifyController {
 	}
 	
 	// delete song 
-	@RequestMapping(value="/songs/{id}", method=RequestMethod.DELETE)
+	@DeleteMapping(value="/songs/{id}")
 	public String destroy(@PathVariable(value="id") Long id,RedirectAttributes redirectAttributes) {
 		lookifyServices.deleteSong(id);
 		redirectAttributes.addFlashAttribute("success", "Song was deleted successfully");
