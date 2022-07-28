@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -75,17 +76,27 @@ public class LookifyController {
 	
 	// search by artist name
 	@PostMapping(value="/search")
-	public String search(@RequestParam(value = "search") String search , Model model ) {
-		List<Song> songs = lookifyServices.allSongsByArList(search);
-		model.addAttribute(songs);
+	public String search(
+			@RequestParam(value = "search") String search ,
+			Model model ,
+			RedirectAttributes redirectAttributes) {
+		
+		if (search.isEmpty()) {
+			return "redirect:/dashboard";
+		}
+		List<Song> songs = lookifyServices.findSongsByArtist(search);
+		if (songs.isEmpty()) {
+			redirectAttributes.addFlashAttribute("error", "Artist "+search+" is not found");
+			return "redirect:/dashboard";
+		}
         return "redirect:/search/"+search;
         
 	}
 	
 	// show the results of the search 
-	@RequestMapping(value="/search/{search}")
+	@GetMapping(value="/search/{search}")
 	public String dsplaySearch(@PathVariable(value = "search") String search , Model model ) {
-		List<Song> songs = lookifyServices.allSongsByArList(search);
+		List<Song> songs = lookifyServices.findSongsByArtist(search);
 		model.addAttribute("songs",songs);
 		model.addAttribute("artist",search);
         return "/search.jsp";

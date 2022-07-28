@@ -16,6 +16,9 @@
 		<c:if test="${not empty success}">
 			<div class="alert alert-success mt-4"><c:out value="${success}"/></div>
 		</c:if>
+		<c:if test="${not empty error}">
+			<div class="alert alert-danger mt-4"><c:out value="${error}"/></div>
+		</c:if>
 		
 		<div class="d-flex align-items-center justify-content-between">
 			<div>
